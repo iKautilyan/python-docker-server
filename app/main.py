@@ -1,16 +1,12 @@
 from fastapi import FastAPI
-from app.auth import router as auth_router
-from app.webhook import router as webhook_router
-from app.callback import router as callback_router
+from auth import router as auth_router
+from orders import router as order_router
 
-app = FastAPI(title="Python Docker Server")
+app = FastAPI()
 
-# Register routes
-app.include_router(auth_router, prefix="/auth", tags=["Auth"])
-app.include_router(webhook_router, prefix="/webhook", tags=["Webhook"])
-app.include_router(callback_router, prefix="/callback", tags=["Callback"])
-
+app.include_router(auth_router, prefix="/api", tags=["auth"])
+app.include_router(order_router, prefix="/api", tags=["orders"])
 
 @app.get("/")
-def root():
-    return {"message": "Server is running inside Docker!"}
+def home():
+    return {"message": "Python server is running locally!"}
