@@ -1,0 +1,1 @@
+This application is to observe movements of prices
