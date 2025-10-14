@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+venv/
+.env
+
+# Docker
+*.log
+*.pid
+*.sock
+*.db
+docker-compose.override.yml
+*.env.*    # any other env files
+
+# VS Code
+.vscode/
+
+# Mac / Linux
+.DS_Store
+*.swp
+
+# Logs
+*.log

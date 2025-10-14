@@ -1,23 +1,16 @@
-# Use lightweight Python image
 FROM python:3.11-slim
 
-# Set work directory
 WORKDIR /app
 
-# Copy dependencies
+# Copy requirements and install
 COPY requirements.txt .
-
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app source
-COPY ./app ./app
+# Copy code
+COPY . .
 
-# Expose port
+# Expose port (Render will override if needed)
 EXPOSE 8000
 
-# Set environment variable
-ENV SECRET_KEY=supersecretkey
-
-# Run FastAPI with Uvicorn
+# Start Uvicorn
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,15 +1,15 @@
-# orders.py
 from fastapi import APIRouter, HTTPException
 import httpx
 import os
 
 router = APIRouter()
+
 HOST_URL = os.getenv("HOST_URL", "https://api.example.com")
 
 @router.post("/order")
 async def place_order(register_token: str):
     """
-    Place a sample order using the register_token.
+    Place a sample order using register_token.
     """
     url = f"{HOST_URL}/transactional/v1/orders/regular"
     headers = {"Authorization": f"Bearer {register_token}"}
@@ -38,13 +38,10 @@ async def place_order(register_token: str):
 
     async with httpx.AsyncClient(timeout=10) as client:
         try:
-            response = await client.post(url, json=payload, headers=headers)
-            data = response.json()
-
+            resp = await client.post(url, json=payload, headers=headers)
+            data = resp.json()
             if data.get("status") != "success":
                 raise HTTPException(status_code=400, detail=data.get("message", "Order failed"))
-
             return {"order_id": data["data"]["orderId"]}
-
         except httpx.RequestError as e:
             raise HTTPException(status_code=500, detail=f"Order service error: {str(e)}")

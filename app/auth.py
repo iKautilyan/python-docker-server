@@ -1,19 +1,15 @@
-# auth.py
 from fastapi import APIRouter, HTTPException
 import httpx
 import os
 
 router = APIRouter()
 
-# Configuration
-HOST_URL = os.getenv("HOST_URL", "https://api.example.com")  # Replace with your actual base URL
+# Config
+HOST_URL = os.getenv("HOST_URL", "https://api.example.com")
 API_KEY = os.getenv("API_KEY", "your-api-key")
 SOURCE = os.getenv("SOURCE", "web")
-
-# Dummy credentials for testing
 USER_ID = os.getenv("USER_ID", "demo_user")
 PASSWORD = os.getenv("PASSWORD", "demo_pass")
-
 
 @router.post("/login")
 async def login():
@@ -50,14 +46,10 @@ async def login():
 
     async with httpx.AsyncClient(timeout=10) as client:
         try:
-            response = await client.post(url, json=payload)
-            data = response.json()
-
+            resp = await client.post(url, json=payload)
+            data = resp.json()
             if data.get("status") != "success":
                 raise HTTPException(status_code=401, detail=data.get("message", "Auth failed"))
-
-            token = data["data"]["register_token"]
-            return {"register_token": token}
-
+            return {"register_token": data["data"]["register_token"]}
         except httpx.RequestError as e:
             raise HTTPException(status_code=500, detail=f"Connection error: {str(e)}")
