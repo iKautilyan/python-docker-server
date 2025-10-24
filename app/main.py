@@ -2,12 +2,11 @@ from fastapi import FastAPI
 from app.auth import router as auth_router
 from app.orders import router as order_router
 
-app = FastAPI(title="FastAPI Docker Server")
+app = FastAPI(title="Trading Server")
 
-# Include routers
-app.include_router(auth_router, prefix="/api", tags=["auth"])
-app.include_router(order_router, prefix="/api", tags=["orders"])
+app.include_router(auth_router)
+app.include_router(order_router)
 
 @app.get("/")
-def home():
-    return {"message": "Python server is running inside Docker!"}
+def root():
+    return {"message": "Python server running!"}

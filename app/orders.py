@@ -1,47 +1,64 @@
-from fastapi import APIRouter, HTTPException
-import httpx
 import os
+import requests
+from fastapi import APIRouter
+from dotenv import load_dotenv
 
-router = APIRouter()
+load_dotenv()
 
-HOST_URL = os.getenv("HOST_URL", "https://api.example.com")
+router = APIRouter(prefix="/order", tags=["Orders"])
 
-@router.post("/order")
-async def place_order(register_token: str):
-    """
-    Place a sample order using register_token.
-    """
-    url = f"{HOST_URL}/transactional/v1/orders/regular"
-    headers = {"Authorization": f"Bearer {register_token}"}
+BASE_URL = os.getenv("BASE_URL")
+ORDER_URL = f"{BASE_URL}/transactional/v1/orders/regular"
 
+def get_headers(token):
+    return {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}",
+        "x-api-key": os.getenv("API_KEY")
+    }
+
+@router.post("/buy")
+def buy_order(token: str):
     payload = {
         "scrip_info": {
-            "exchange": "NCDEX_FO",
-            "scrip_token": 54669,
-            "symbol": "",
-            "series": "",
-            "expiry_date": "",
-            "strike_price": "",
-            "option_type": ""
+            "exchange": "NSE_FO",
+            "symbol": "OPTION_SYMBOL",
+            "series": "OPT",
+            "expiry_date": "2025-12-31",
+            "strike_price": "10000",
+            "option_type": "CE"
         },
         "transaction_type": "BUY",
         "product_type": "INTRADAY",
         "order_type": "RL-MKT",
-        "quantity": 3,
+        "quantity": 1,
         "price": 0,
         "trigger_price": 0,
-        "disclosed_quantity": 0,
-        "validity": "DAY",
-        "validity_days": 0,
-        "is_amo": False
+        "validity": "DAY"
     }
 
-    async with httpx.AsyncClient(timeout=10) as client:
-        try:
-            resp = await client.post(url, json=payload, headers=headers)
-            data = resp.json()
-            if data.get("status") != "success":
-                raise HTTPException(status_code=400, detail=data.get("message", "Order failed"))
-            return {"order_id": data["data"]["orderId"]}
-        except httpx.RequestError as e:
-            raise HTTPException(status_code=500, detail=f"Order service error: {str(e)}")
+    res = requests.post(ORDER_URL, json=payload, headers=get_headers(token))
+    return res.json()
+
+@router.post("/sell")
+def sell_order(token: str):
+    payload = {
+        "scrip_info": {
+            "exchange": "NSE_FO",
+            "symbol": "OPTION_SYMBOL",
+            "series": "OPT",
+            "expiry_date": "2025-12-31",
+            "strike_price": "10000",
+            "option_type": "CE"
+        },
+        "transaction_type": "SELL",
+        "product_type": "INTRADAY",
+        "order_type": "RL-MKT",
+        "quantity": 1,
+        "price": 0,
+        "trigger_price": 0,
+        "validity": "DAY"
+    }
+
+    res = requests.post(ORDER_URL, json=payload, headers=get_headers(token))
+    return res.json()
