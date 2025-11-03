@@ -24,11 +24,8 @@ def login_user():
 
     headers = {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY,
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+        "x-api-key": os.getenv("API_KEY")
     }
-
 
     try:
         res = requests.post(LOGIN_URL, json=payload, headers=headers)
