@@ -29,7 +29,12 @@ def login_user():
 
     try:
         res = requests.post(LOGIN_URL, json=payload, headers=headers)
-        data = res.json()
+        print("DEBUG STATUS:", res.status_code)
+        print("DEBUG TEXT:", res.text)
+        try:
+            data = res.json()
+        except Exception:
+            return {"error": "Non-JSON response from API", "body": res.text}
         if res.status_code != 200 or "data" not in data:
             return {"error": "Login failed", "details": data}
 
